@@ -1,0 +1,314 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- base href="http://www.python.org/doc/essays/threads.html" --></head><body bgcolor="WHITE"><div style="background:#fff;border:1px solid #999;margin:-1px -1px 0;padding:0;"><div style="background:#ddd;border:1px solid #999;color:#000;font:13px arial,sans-serif;font-weight:normal;margin:12px;padding:8px;text-align:left">This is Google's cache of <a href="http://www.python.org/doc/essays/threads.html" style="text-decoration:underline;color:#00c">http://www.python.org/doc/essays/threads.html</a>. It is a snapshot of the page as it appeared on 19 Feb 2014 02:11:25 GMT. The <a href="http://www.python.org/doc/essays/threads.html" style="text-decoration:underline;color:#00c">current page</a> could have changed in the meantime. <a href="http://support.google.com/websearch/bin/answer.py?hl=en&amp;p=cached&amp;answer=1687222" style="text-decoration:underline;color:#00c">Learn more</a><br>Tip: To quickly find your search term on this page, press <b>Ctrl+F</b> or <b>⌘-F</b> (Mac) and use the find bar.<br><br><div style="float:right"><a href="http://webcache.googleusercontent.com/search?q=cache:1wC31sKBvlgJ:www.python.org/doc/essays/threads.html&amp;client=firefox-a&amp;hl=en&amp;gl=br&amp;strip=1" style="text-decoration:underline;color:#00c">Text-only version</a></div>
+<div>&nbsp;</div></div></div><div style="position:relative">
+
+<title>Thread Programming With Python</title>
+
+
+
+
+<b>This is an unfinished draft!</b>
+
+<h1>Thread Programming With Python</h1>
+
+<p>Threads are a useful, but difficult programming concept.  While the
+concept of multi-threaded programming is easy to grasp, writing
+correct multi-threaded programs is hard.  It has been argued that
+threads are evil and should be banned [Ousterhout].  Rather than
+taking such an extreme viewpoint, I believe that threads are useful
+for some tasks, such as parallel asynchronous I/O, where the
+alternative is worse.
+
+</p><p>Consequently, Python supports some very simple optional operations
+for threading.  Suppport for these operations must be requested when
+Python is built for a particular installation; it is available for
+most platforms except for Macintosh.  In particular, threading is
+supported for Windows NT and 95, for Unix systems with a POSIX thread
+implementation (this includes Linux), and for native threads on Sun
+Solaris and SGI IRIX.  Thread semantics and performance differ
+somewhat between platforms, but for correctly written programs these
+differences won't matter.
+
+</p><p>I believe that Python is an excellent language to learn how to
+write multi-threaded programs.  In this paper I give a quick
+introduction to threads in general, show how to use threads in Python,
+and discuss various synchronization techniques and how they can be
+implemented in Python using the basic synchronization object
+available.  I also show how the most useful two-third of the Java
+thread API can be implemented as a small collection of Python classes.
+
+</p><h2>What Are Threads?</h2>
+
+<p>You are probably familiar with multi-processing (also known as
+multi-programming or multi-tasking): a single computer running several
+programs (seemingly) simultaneously.  This is done by clever and
+frequent switching between the execution state of each program.  For
+example, the print spooler on your PC may be printing pages from one
+document while you are editing another document in your word
+processor.
+
+</p><p>Multi-threading is a finer-grained version of the same idea:
+multiple things going on simultaneously <i>within the same
+program</i>.  For example, most web browsers allow you to continue to
+browse while a file download is in progress.
+
+</p><p>Each "thing" going on independently in this case is called a
+thread, short for thread of control.  You can think of a thread as a
+mini-program executing (mostly) independently inside the whole
+program.
+
+</p><p>When talking about multi-threading, we generally refer to the whole
+program as a <i>process</i>.  This is the term used in operating
+systems for a running program, and has more precise definition than
+"program" (which is often casually used to refer to what is actually a
+group of closely cooperating processes).
+
+</p><p>The difference between multi-threading and multi-processing is the
+amount of sharing and the granularity of the communication that goes
+on between the participants.  Separate processes on the same computer
+each have their own, private portion of the computer's primary memory.
+They can communicate only via the file system, and perhaps via pipes
+and events (and on some systems via specially allocated segments of
+shared memory).  Multiple threads, on the other hand, share the entire
+memory address space of the process to which they belong.
+
+</p><p>The sharing of memory between threads allows faster and more
+fine-grained communication between threads: threads can communicate by
+exchanging a pointer to a data structure in memory, while separate
+processes need to serialize data to a file or buffer in order to pass
+it to each other.
+
+</p><p>Another reason for using threads is that the creation of a new
+thread is much faster than the creation of a new process.  This means
+that when you have a relatively small amount of work that you would
+like to handle separately, it is more attractive to use a separate
+thread instead of a separate process.  The difference in cost between
+thread and process creation depends on which operating system you are
+using.  On Unix, creating a new process is relatively quick, while on
+Windows NT or 95, process creation is truly expensive -- thread
+creation on the other hand is cheap on each system.  Given the trend
+towards Windows, we can expect a growing popularity of threads.
+
+</p><h2>The Other Side Of The Coin</h2>
+
+<p>Unfortunately, like so many things in life, there's a dark side to
+threads.  It may be because most programmers are initially trained to
+write sequential (i.e., single-threaded) programs only, or perhaps are
+brains aren't capable of reasoning about multiple interacting tasks
+going on in parallel.  In any case, experience shows that writing
+multi-threaded programs is harder than writing single-threaded
+programs.  While Python removes some of the worst nightmares of
+multi-threaded programming, it can't avoid all problems, some of which
+are inherent to the usefulness of threads.
+
+</p><p>The fundamental problem with multi-threaded programs is that we
+don't have control over the interleaving of the execution of threads.
+The operating system generally guarantees that each thread will make
+progress.  It does so by periodically switching its attention from one
+thread to the next.  Unfortunately the operating system is oblivious
+to the task that a thread is trying to accomplish, and may switch to
+another thread at an arbitrary point in the middle of that task.  On
+high-end computers the problem can become worse: a system may have
+multiple CPUs, and execute two or more threads truly simultaneously on
+different CPUs.  Clearly this has the effect of interleaving the
+computations of the threads at the instruction level.
+
+</p><p>Because of subtle timing differences, the interleaving of threads
+can be different each time a program is run, even when it is given
+exactly the same input each time, and certainly wih (even ever so
+slightly) different input.  This makes multi-threaded programs
+especially hard to debug: if it works okay in one test run, that
+doesn't mean that it will run okay in the next.
+
+</p><p>For example, consider the common situation of two threads that both
+need to increment a counter.  The counter could be used to count a
+number of files downloaded, and some other thread could be waiting for
+the counter to reach a particular value (e.g. the total number of
+files to download).  Consider the following pseudo-code:
+
+</p><pre>while "more files to download":
+   "download the next file"
+   nfiles = nfiles + 1
+</pre>
+
+<p>Focusing our attention on the last statement (nfiles = nfiles + 1)
+for a moment, this seems harmless enough.  Translated to machine code
+(or to Python byte code), this statement looks roughly as follows:
+
+</p><ul>
+<li>Load global variable 'nfiles' into a register
+</li><li>Add 1 to the register
+</li><li>Store the register into global variable 'nfiles'
+</li></ul>
+
+<p>Now imagine two threads executing this same code in parallel.  The
+interleaving between threads can happen between any two items.  For
+example, the following interleaving <i>could</i> happen:
+
+</p><ul>
+<li>Thread A loads 'nfiles' into its register
+</li><li>Thread B loads 'nfiles' into its register
+</li><li>Thread A adds 1 to its register
+</li><li>Thread B adds 1 to its register
+</li><li>Thread A stores its register into 'nfiles'
+</li><li>Thread B stores its register into 'nfiles'
+</li></ul>
+
+<p>Clearly, if the initial value of nfiles is 10, both threads load 10
+into their register, both increment their register to 11, and both
+store 11 into nfiles.  However, if they would have been executed
+without interleaving, nfiles would have been incremented twice, to 12,
+as expected.
+
+</p><p>A situation like this is called a race condition.  Race conditions
+are almost always hard to find bugs, and are characterized by
+unexpected outcomes under certain interleaving conditions.
+
+</p><p>On the other hand, the individual instructions ("load", "add",
+"store") are not further divisible, and have only two possible
+interleavings: one instruction is executed entirely before the other,
+or the other way around.  Such instructions are called atomic.
+Strictly speaking, atomicity of an operation is always with respect to
+another operation, but often, when we think of a particular level of
+abstraction, we can simply speak of atomic operations and
+non-atomic operations.
+
+</p><h2>Mutual Exclusion: Critical Sections And Locks</h2>
+
+<p>The general concept of keeping operations "out of each other's
+hair" is called mutual exclusion.  In order to implement mutual
+exclusion, we need a way to force arbitrary sequences of operations to
+be atomic.  The usual approach is to use a mechanism called a critical
+section.  (Some programming languages call it a monitor.)  It is a
+region of the program which can be entered by only one thread at a
+time.  Sometimes (e.g. in Java, with the "synchronized" keyword),
+critical sections are a language feature.  Other times (e.g. when
+using POSIX threads in C or C++) they must be implemented using a more
+primitive library feature called a lock.
+
+</p><p>Python, surprisingly enough, does not have critical sections as a
+language feature.  This is because historically, threads are an
+optional feature of Python.  They are still not supported on all
+platforms, e.g. Python on the Macintosh has no threads.
+
+</p><p>Fortunately, implementing critical sections using locks is easy
+enough.  I'll first explain how locks work.  (A basic lock is also
+known as a binary semaphore, due to its similarity with a signpost as
+used in railroads guarding a particular stretch of railroad tracks.)
+
+</p><p>A lock is an object with two states: locked and unlocked.
+Initially, it is in the unlocked state.  It has two methods: acquire()
+and release().  The acquire() method changes the lock from the
+unlocked into the locked state.  This is like setting a semaphore to
+unsafe and entering the stretch of railroad tracks guarded by the
+semaphore.  The release() method changes the lock from unlocked to
+locked; it is like leaving the stretch and resetting the semaphore to
+safe.  When acquire() is called on a lock that is already locked,
+the operation <b>blocks</b> until another thread invokes the release()
+method.  This is like a train waiting to enter the stretch until the
+semaphore signals safe.  It is illegal to call release() when the
+lock is unlocked.  This would be like a train leaving the guarded
+stretch without having set the semaphore to unsafe on entering -- a
+crash may occur!
+
+</p><p>Locks are generally implemented by the operating system, and the
+acquire() and release() methods are executed atomically.  The
+operating system guarantees that at most one thread at a time can
+change the lock from unlocked to locked, and that all other threads
+that attempt to acquire() the same lock are blocked.  When the lock is
+released, exactly one of the blocked threads waiting for the lock (if
+any) is unblocked.
+
+</p><p>A lock can be used to insure that "increment counter" operations in
+different threads are atomic.  For example:
+
+</p><pre># Somewhere in the main program:
+lock = thread.allocate_lock()           # Create a lock object
+counter = 0
+
+    .
+    .
+    .
+
+    # In each thread:
+    lock.acquire()                      # Begin critical section
+    counter = counter + 1
+    lock.release()                      # End critical section
+</pre>
+
+<p>This program has one critical section, the code between the
+acquire() and release() calls.  It is entered by different threads at
+different times, but because the acquire() method only allows one
+thread to continue at a time, there will never be more than one thread
+executing in the critical section.  Thus, effectively the counter
+increment is executed atomically.  Note that the program structure
+guarantees that release() is always called after acquire(), so there
+is no danger of a release() with the lock in the unlocked state.
+
+</p><h2>Using Threads</h2>
+
+<p>Let's look at a useful example program that uses threads.  We'll
+study a webcrawler -- a program that fetches web pages, analyzes them
+looking for links, and then uses those links to fetch more web pages
+-- ad infinitum (or until we stop it :-).  This can be used to create
+your own web indexer, or to check a website for bad links, or for many
+other household uses.  A single-threaded crawler named webchecker is
+part of the Python distribution (in the Tools subdirectory).  It is
+often very slow, because it often has to wait a long time before a web
+page is transferred.  Especially when loading web pages from many
+hosts, some of which may be down or very slow, this means that it can
+take a long time to check a reasonable number of pages.  A
+multi-threaded crawler can continue to work on other pages in other
+threads while one thread is blocked waiting for a slow host.
+
+</p><p>We'll start with a really simple version: a program that simply
+downloads a number of pages given by URL on the command line.  It
+forks a separate thread for each URL.  For every loaded page, it
+prints a byte count.
+
+</p><pre>import sys, thread, time, urllib, httplib, re
+
+def main():
+    for url in sys.argv[1:]:
+        thread.start_new(loadurl, (url,))
+    time.sleep(1000000)
+
+def loadurl(url):
+    f = urllib.urlopen(url)
+    text = f.read()
+    f.close()
+    print len(text), url
+
+main()
+</pre>
+
+<p>The main thread (this is the default thread that starts the
+program) executes the main() function.  This function uses the
+thread.start_new() function to create a new thread for each argument
+in sys.argv[1:].  Each thread runs the loadurl() function with a
+different URL as argument.  The main function ends by sleeping a
+million seconds.  (This is just to simplify the code of this first
+example, since the code needed to wait for completion of all threads
+is slightly complicated.)
+
+</p><p>Remember that all threads execute in parallel -- the
+thread.start_new() call does not wait until the loadurl() function is
+done, but rather returns immediately after the new thread has been
+scheduled for execution.
+
+</p><p>You must run this script with a number of URLs as arguments.  For
+example:
+
+</p><pre>python crawl1.py http://www.cwi.nl http://www.python.org
+</pre>
+
+<p>This might print
+
+</p><pre>10313 http://www.python.org
+2739 http://www.cwi.nl
+</pre>
+
+<p>Prehaps it would print the two lines the other way around.  After
+that, it will just hang there -- until a million seconds have passed.
+You may want to hit Control-C at this point.
+</p></div></body></html>
