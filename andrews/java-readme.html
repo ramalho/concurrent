@@ -1,0 +1,29 @@
+The Java programs have been tested on Sun Solaris,
+Alpha OSF, and Pentium Linux systems.
+In the remote database program (Figure 8.16),
+<tt>localhost</tt> has been used instead of
+the name of my machine (<tt>paloverde</tt>)
+so that the program can be run on any host.
+
+<p>
+<DD>  Readers/writers,
+        <a href="rw.seq.java">
+        sequential</a> program (pages 241-42)
+<DD>  Readers/writers,
+        <a href="rw.par.java">
+        parallel</a> program with no synchronization (pages 241-43)
+<DD>  Readers/writers,
+        <a href="rw.excl.java">
+        exclusive</a> access program (pages 243-44)
+<DD>  Readers/writers, true solution with
+        <a href="rw.real.java">
+        concurrent reads or exclusive writes</a> (pages 245-46)
+<DD>  Remote file reader using sockets,
+        <a href="http:FileReaderServer.java">
+        server</a> class in Figure 7.18
+<DD>  Remote file reader using sockets,
+        <a href="Client.java">
+        client</a> class in Figure 7.19
+<DD>  Remote data base using remote method invocation (RMI),
+        <a href="RemoteDatabase.java">
+        interface, client, and server</a> in Figure 8.16
