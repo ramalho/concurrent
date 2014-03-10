@@ -15,17 +15,13 @@ public class HelloWorld {
 }
 """
 
-import threading
+import thread
 import time
 
 def say_hello():
-    time.sleep(.001)
     print 'Hello from new thread'
 
-my_thread = threading.Thread(target=say_hello)
-my_thread.start()
+my_thread = thread.start_new_thread(say_hello, ())
 # if delay is small (.001), output of newlines is non-deterministic
-# time.sleep(.001)
+time.sleep(.001)
 print "Hello from main thread"
-my_thread.join()
-print "End of main"
