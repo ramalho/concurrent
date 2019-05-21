@@ -6,9 +6,9 @@ This directory contains examples, exercises, and experiments based on Allen Down
 
 ## Semaphore method names
 
-Below are some semaphore method names mentioned by Prof. Downey in section 2.2,
-and the names of the methods in Python's `threading.Semaphore` class (same as Java's
-`concurrent.Semaphore` class) and [POSIX](https://linux.die.net/man/7/sem_overview).
+Below are some semaphore method names mentioned by Prof. Downey in section 2.2;
+the names of the methods in the `Semaphore` classes in Python and Java;
+and the corresponding [POSIX semaphore](https://linux.die.net/man/7/sem_overview) functions.
     
 | Dykstra | action      | used for | Python/Java | POSIX      | meaning
 | ------- | ----------- | -------- | ----------- | ---------- | ------------
