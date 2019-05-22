@@ -21,20 +21,23 @@ Hint: the first question is easy; the second is not.
 import random
 import time
 
-from threading_cleanup import Thread
+from threading_cleanup import Thread, Semaphore
 
-def update():
+def update(updating):
     global count
-    # time.sleep(random.random() / 10)
-    for _ in range(100):
+    time.sleep(random.random() / 100)
+    for i in range(100):
+        updating.wait()
         temp = count
-        time.sleep(0)
+        time.sleep(random.random() / 1000)
         count = temp + 1
+        updating.signal()
 
 count = 0
 
 def main():
-    threads = [Thread(update) for t in range(100)]
+    updating = Semaphore(1)
+    threads = [Thread(update, updating) for t in range(100)]
     for thread in threads:
         thread.join()
     print('count:', count)
