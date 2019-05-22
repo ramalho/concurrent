@@ -28,25 +28,24 @@ def show(name, activity):
     print(name, activity, sep=':\t', flush=True)
 
 
-def allen(call):
-    show('Allen', 'Eat breakfast')
-    show('Allen', 'Work')
-    show('Allen', 'Eat lunch')
-    show('Allen', 'Call Bob')
+def allen_day(call):
+    show('Allen', '☕\tEating breakfast')
+    show('Allen', '🛠\tWorking')
+    show('Allen', '🌮\tEating lunch')
+    show('Allen', '📞\tCall Bob')
     call.set()
 
 
-def bob(call):
-    show('Bob', 'Eat breakfast')
-    show('Bob', 'Wait for a call')
+def bob_day(call):
+    show('Bob', '☕\tEating breakfast')
+    show('Bob', '🕰\tWaiting for a call')
     call.wait()
-    show('Bob', 'Eat lunch')
+    show('Bob', '🌮\tEating lunch')
 
 
 def main():
     call = threading.Event()
-    Thread(allen, call)
-    Thread(bob, call)
-
+    allen = Thread(allen_day, call)
+    bob = Thread(bob_day, call)
 
 main()

@@ -44,7 +44,5 @@ def main():
     bob = Thread(work, 'Bob', lunch_break, finish)
     time.sleep(.4)
     finish.set()
-    allen.join()
-    bob.join()
     
 main()
