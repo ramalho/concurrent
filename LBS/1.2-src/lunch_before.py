@@ -40,12 +40,12 @@ def bob_day(call):
     show('Bob', '☕\tEating breakfast')
     show('Bob', '🕰\tWaiting for a call')
     call.wait()
-    show('Bob', '🌮\tEating lunch')
+    show('Bob', '🍔\tEating lunch')
 
 
 def main():
     call = threading.Event()
-    allen = Thread(allen_day, call)
-    bob = Thread(bob_day, call)
+    Thread(allen_day, call)
+    Thread(bob_day, call)
 
 main()
