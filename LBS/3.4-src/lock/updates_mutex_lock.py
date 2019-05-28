@@ -21,27 +21,27 @@ Hint: the first question is easy; the second is not.
 import random
 import time
 
-from threading_cleanup import Thread, Semaphore
+from threading_cleanup import Thread
+from threading import Lock
 
 def update(thread_id, updating):
     global count
     time.sleep(random.random() / 100)
     print(f'#{thread_id}', end='', flush=True)
     for i in range(100):
-        updating.wait()
-        temp = count
-        print(f'.', end='', flush=True)
-        time.sleep(random.random() / 5000)
-        count = temp + 1
-        updating.signal()
+        with updating:
+            temp = count
+            print('.', end='', flush=True)
+            time.sleep(random.random() / 5000)
+            count = temp + 1
 
 count = 0
 
 def main():
-    updating = Semaphore(1)
+    updating = Lock()
     threads = [Thread(update, t, updating) for t in range(100)]
     for thread in threads:
         thread.join()
-    print('count:', count)
+    print('\ncount:', count)
 
 main()
