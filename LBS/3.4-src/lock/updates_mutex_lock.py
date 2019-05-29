@@ -29,11 +29,12 @@ def update(thread_id, updating):
     time.sleep(random.random() / 100)
     print(f'#{thread_id}', end='', flush=True)
     for i in range(100):
-        with updating:
-            temp = count
-            print('.', end='', flush=True)
-            time.sleep(random.random() / 5000)
-            count = temp + 1
+        updating.acquire()
+        temp = count
+        print('.', end='', flush=True)
+        time.sleep(random.random() / 5000)
+        count = temp + 1
+        updating.release()
 
 count = 0
 
