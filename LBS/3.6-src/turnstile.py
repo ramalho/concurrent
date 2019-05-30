@@ -37,11 +37,10 @@ def work(thread_id, barrier, counter_lock):
     with counter_lock:
         threads_at_barrier += 1
         if threads_at_barrier == total_threads:
-            barrier.signal()
-            threads_at_barrier = 0
+            barrier.signal()  # unlock turnstile (see next comment)
             print(barrier.value(), '#' * 50, flush=True)
-    barrier.wait()
-    barrier.signal()
+    barrier.wait()    # ⎱ this wait→signal sequence is called a "turnstile" because
+    barrier.signal()  # ⎰ once unlocked it allows one thread to pass at a time
     show('\t' * thread_id, f't{thread_id} 🔷')
 
 total_threads = 5
