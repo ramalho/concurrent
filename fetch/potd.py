@@ -17,21 +17,22 @@ def get_month(year, month):
     body = resp.read()
     with open(f'{HTML_DIR}/{year}-{month:02d}.html', 'wb') as fp:
         fp.write(body)
-    return (year, month)
+    return len(body)
 
 
 def main():
     with ThreadPoolExecutor(max_workers=12) as executor:
-        futures = (executor.submit(get_month, year, month)
-                   for year in range(2005, 2019) for month in range(1, 13))
+        futures = {executor.submit(get_month, year, month): (year, month)
+                   for year in range(2005, 2019) for month in range(1, 13)}
 
         for future in as_completed(futures):
+            year_month = futures[future]
             try:
-                year_month = future.result()
+                bytes_read = future.result()
             except Exception as exc:
                 print(f'{year_month} generated an exception: {exc}')
             else:
-                print(year_month)
+                print(bytes_read, 'bytes')
 
 
 if __name__ == '__main__':
