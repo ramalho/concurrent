@@ -2,68 +2,69 @@
 
 
 '''
+Download times from office rated at 140 Mbps by Fast.com
 
-Download times from office rated at ~110 Mbps by Fast.com
+$ time ./size2secs.py 
+Group 15 _____________ total _______ average
+ size             96_994 B        32_331 B
+ time               2.80 s          0.93 s
+ rate                     34_690 B/s
+Group 16 _____________ total _______ average
+ size            241_158 B        80_386 B
+ time               3.34 s          1.11 s
+ rate                     72_130 B/s
+Group 17 _____________ total _______ average
+ size            439_364 B       146_455 B
+ time               3.56 s          1.19 s
+ rate                    123_352 B/s
+Group 18 _____________ total _______ average
+ size            887_113 B       295_704 B
+ time               4.06 s          1.35 s
+ rate                    218_399 B/s
+Group 19 _____________ total _______ average
+ size          1_347_667 B       449_222 B
+ time               4.23 s          1.41 s
+ rate                    318_652 B/s
+Group 20 _____________ total _______ average
+ size          3_149_093 B     1_049_698 B
+ time               5.38 s          1.79 s
+ rate                    584_977 B/s
+Group 21 _____________ total _______ average
+ size          6_191_935 B     2_063_978 B
+ time               6.35 s          2.12 s
+ rate                    975_415 B/s
+Group 22 _____________ total _______ average
+ size         12_751_287 B     4_250_429 B
+ time              10.73 s          3.58 s
+ rate                  1_188_022 B/s
+Group 23 _____________ total _______ average
+ size         23_310_838 B     7_770_279 B
+ time              24.52 s          8.17 s
+ rate                    950_713 B/s
+Group 24 _____________ total _______ average
+ size         53_967_081 B    17_989_027 B
+ time              83.98 s         27.99 s
+ rate                    642_621 B/s
+Group 25 _____________ total _______ average
+ size         95_928_637 B    31_976_212 B
+ time             139.58 s         46.53 s
+ rate                    687_242 B/s
+Group 26 _____________ total _______ average
+ size        175_464_941 B    58_488_314 B
+ time             178.86 s         59.62 s
+ rate                    981_028 B/s
+Group 27 _____________ total _______ average
+ size        340_318_067 B   113_439_356 B
+ time             247.73 s         82.58 s
+ rate                  1_373_720 B/s
+Group 28 _____________ total _______ average
+ size        802_604_257 B   267_534_752 B
+ time             230.68 s         76.89 s
+ rate                  3_479_370 B/s
 
-15
-      35_571 B   0.712 s          49_981 B/s
-      32_139 B   0.654 s          49_166 B/s
-      35_607 B   0.657 s          54_222 B/s
-16
-      85_181 B   0.833 s         102_244 B/s
-      71_001 B   0.869 s          81_718 B/s
-      91_966 B   0.826 s         111_303 B/s
-17
-     108_033 B   0.932 s         115_884 B/s
-     183_336 B   1.095 s         167_401 B/s
-     142_520 B   0.912 s         156_246 B/s
-18
-     364_729 B   1.250 s         291_824 B/s
-     234_966 B   1.094 s         214_683 B/s
-     337_301 B   1.326 s         254_290 B/s
-19
-     418_524 B   1.103 s         379_503 B/s
-     418_020 B   1.141 s         366_358 B/s
-     663_463 B   1.327 s         499_885 B/s
-20
-   1_015_045 B   1.402 s         724_020 B/s
-   1_006_040 B   1.482 s         678_818 B/s
-   1_050_085 B   1.581 s         664_217 B/s
-21
-   2_660_339 B   1.792 s       1_484_568 B/s
-   2_004_828 B   1.632 s       1_228_609 B/s
-   2_359_048 B   1.496 s       1_576_948 B/s
-22
-   4_929_829 B   1.670 s       2_951_827 B/s
-   3_024_820 B   1.527 s       1_981_132 B/s
-   4_689_225 B   1.738 s       2_697_399 B/s
-23
-   6_308_178 B   1.908 s       3_305_505 B/s
-   6_516_131 B   2.061 s       3_161_128 B/s
-   8_799_420 B   2.190 s       4_018_563 B/s
-24
-  22_219_334 B   4.949 s       4_489_783 B/s
-  20_222_864 B   5.954 s       3_396_599 B/s
-  13_513_327 B   2.289 s       5_902_841 B/s
-25
-  27_409_511 B   4.000 s       6_852_956 B/s
-  24_224_693 B   3.650 s       6_637_281 B/s
-  29_403_262 B   3.841 s       7_654_395 B/s
-26
-  47_976_955 B   6.057 s       7_920_590 B/s
-  62_296_842 B   6.607 s       9_428_602 B/s
-  77_726_028 B   7.575 s      10_260_385 B/s
-27
- 101_284_112 B   9.320 s      10_867_530 B/s
- 103_284_185 B  12.984 s       7_954_780 B/s
- 100_805_313 B   9.850 s      10_234_147 B/s
-28
- 226_102_411 B  24.221 s       9_334_924 B/s
- 233_682_756 B  20.046 s      11_657_228 B/s
- 215_064_763 B  20.734 s      10_372_524 B/s
-
-    #bps = size / dt
-    #print(f'{size:12_d} B\t{dt:7.3f} s\t{bps:11_.0f} B/s')
+real    1m33.293s
+user    0m7.271s
+sys 0m10.580s
 
 '''
 
@@ -80,6 +81,7 @@ from concurrent import futures
 BASE_URL = 'https://upload.wikimedia.org/wikipedia/commons/'
 LOCAL_PATH = 'img/'
 SAMPLE_LEN = 3
+
 
 PathSize = collections.namedtuple('PathSize', 'path size')
 TimeSize = collections.namedtuple('TimeSize', 'time size')
