@@ -1,8 +1,8 @@
 import threading
 import time
 
-def main():
 
+def main():
     def run():
         time.sleep(0)
         print('Hello from new thread')
