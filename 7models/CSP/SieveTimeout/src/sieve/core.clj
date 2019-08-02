@@ -7,7 +7,8 @@
 ; Visit http://www.pragmaticprogrammer.com/titles/pb7con for more book information.
 ;---
 (ns sieve.core
-  (:require [clojure.core.async :as async :refer :all :exclude [map into reduce merge partition partition-by take]]))
+  (:require [clojure.core.async :as async :refer :all :exclude [map into reduce merge partition partition-by take]]
+            [clojure.edn :as edn]))
 
 (defn factor? [x y]
   (zero? (mod y x)))
@@ -24,7 +25,7 @@
 
 (defn -main [seconds]
   (let [primes (get-primes)
-        limit (timeout (* (Integer. seconds) 1000))]
+        limit (timeout (* (edn/read-string seconds) 1000))]
     (loop []
       (alt!! :priority true
         limit nil

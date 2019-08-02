@@ -16,7 +16,7 @@ class Counter implements Runnable {
 
   private BlockingQueue<Page> queue;
   private Map<String, Integer> counts;
-  private ReentrantLock lock;
+  private static ReentrantLock lock;
 
   public Counter(BlockingQueue<Page> queue,
                  Map<String, Integer> counts) {

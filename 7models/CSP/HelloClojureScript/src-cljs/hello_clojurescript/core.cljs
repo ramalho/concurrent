@@ -8,14 +8,13 @@
 ;---
 (ns hello-clojurescript.core
   (:require-macros [cljs.core.async.macros :refer [go]]) 
-  (:require [goog.dom :refer [append createDom getElement]]
+  (:require [goog.dom :as dom]
             [cljs.core.async :refer [<! timeout]])) 
-
+			
 (defn output [elem message] 
-  (append elem message (createDom "br")))
-
+  (dom/append elem message (dom/createDom "br")))
 (defn start []
-  (let [content (getElement "content")]
+  (let [content (dom/getElement "content")]
     (go 
       (while true 
         (<! (timeout 1000)) 

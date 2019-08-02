@@ -7,7 +7,8 @@
 ; Visit http://www.pragmaticprogrammer.com/titles/pb7con for more book information.
 ;---
 (ns server.core
-  (:require [server.sentences   :refer [strings->sentences]]
+  (:require [clojure.edn        :as    edn]
+            [server.sentences   :refer [strings->sentences]]
             [server.charset     :refer [wrap-charset]]
             [compojure.core     :refer :all]
             [compojure.handler  :refer [api]]
@@ -35,10 +36,10 @@
 
 (defroutes app-routes
   (PUT "/snippet/:n" [n :as {:keys [body]}]
-    (accept-snippet (Integer. n) (slurp body))
+    (accept-snippet (edn/read-string n) (slurp body))
     (response "OK"))
   (GET "/translation/:n" [n] 
-    (response (get-translation (Integer. n)))))
+    (response (get-translation (edn/read-string n)))))
 
 (defn -main [& args]
   (run-jetty (wrap-charset (api app-routes)) {:port 3000}))

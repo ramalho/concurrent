@@ -57,6 +57,7 @@ class ConcurrentSortedList {
   public int size() {
     Node current = tail;
     int count = 0;
+	
     while (current.prev != head) {
       ReentrantLock lock = current.lock;
       lock.lock();
@@ -65,6 +66,7 @@ class ConcurrentSortedList {
         current = current.prev;
       } finally { lock.unlock(); }
     }
+	
     return count;
   }
 

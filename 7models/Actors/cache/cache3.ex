@@ -8,7 +8,6 @@
 #---
 defmodule Cache do
   use GenServer.Behaviour
-
   #####
   # External API
 
@@ -36,7 +35,6 @@ defmodule Cache do
     new_size = size + byte_size(page)
     {:noreply, {new_pages, new_size}}
   end
-
   def handle_call({:get, url}, _from, {pages, size}) do
     {:reply, pages[url], {pages, size}}
   end

@@ -18,6 +18,7 @@ defmodule Talker do
   end
 end
 
+Process.flag(:trap_exit, true)
 pid = spawn_link(&Talker.loop/0)
 
 send(pid, {:greet, "Huey"})

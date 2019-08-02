@@ -7,7 +7,8 @@
 ; Visit http://www.pragmaticprogrammer.com/titles/pb7con for more book information.
 ;---
 (ns server.core
-  (:require [compojure.core     :refer :all]
+  (:require [clojure.edn        :as    edn]
+            [compojure.core     :refer :all]
             [compojure.handler  :refer [site]]
             [ring.util.response :refer [response]]
             [ring.adapter.jetty :refer [run-jetty]]))
@@ -23,7 +24,7 @@
 
 (defroutes app-routes
   (PUT "/snippet/:n" [n :as {:keys [body]}]
-    (accept-snippet (Integer. n) (slurp body))
+    (accept-snippet (edn/read-string n) (slurp body))
     (response "OK")))
 
 (defn -main [& args]

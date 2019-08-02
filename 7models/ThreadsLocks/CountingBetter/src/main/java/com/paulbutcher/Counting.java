@@ -11,7 +11,6 @@ package com.paulbutcher;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Counting {
-
   public static void main(String[] args) throws InterruptedException {
     
     final AtomicInteger counter = new AtomicInteger();

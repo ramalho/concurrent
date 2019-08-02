@@ -25,6 +25,5 @@
 (defroutes app-routes 
   (GET "/players" [] (list-players))
   (PUT "/players/:player-name" [player-name] (create-player player-name)))
-
 (defn -main [& args]
   (run-jetty (site app-routes) {:port 3000})) 

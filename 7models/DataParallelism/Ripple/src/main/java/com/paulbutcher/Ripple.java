@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.LongBuffer;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -40,8 +41,8 @@ import static org.lwjgl.opencl.CL10GL.*;
 
 public class Ripple {
 
-  private static long start = System.currentTimeMillis();
   private static int FLOAT_SIZE = (Float.SIZE / Byte.SIZE);
+  private static int LONG_SIZE = (Long.SIZE / Byte.SIZE);
 
   private void start() {
     try {
@@ -90,19 +91,17 @@ public class Ripple {
 
       CLMem vertexBufferCL = clCreateFromGLBuffer(context, CL_MEM_READ_WRITE, vertexBuffer, null);
 
-      int numCentres = 16;
-      int currentCentre = 0;
-
-      FloatBuffer centres = BufferUtils.createFloatBuffer(numCentres * 2);
-      centres.put(new float[numCentres * 2]);
-      centres.flip();
-
-      FloatBuffer times = BufferUtils.createFloatBuffer(numCentres);
-      times.put(new float[numCentres]);
+      int numCenters = 16;
+      int currentCenter = 0;
+      FloatBuffer centers = BufferUtils.createFloatBuffer(numCenters * 2);
+      centers.put(new float[numCenters * 2]);
+      centers.flip();
+      LongBuffer times = BufferUtils.createLongBuffer(numCenters);
+      times.put(new long[numCenters]);
       times.flip();
 
-      CLMem centresBuffer =
-        clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,centres, null);
+      CLMem centersBuffer =
+        clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,centers, null);
       CLMem timesBuffer =
         clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, times, null);
 
@@ -118,10 +117,10 @@ public class Ripple {
 
         Util.checkCLError(clEnqueueAcquireGLObjects(queue, vertexBufferCL, null, null));
         kernel.setArg(0, vertexBufferCL);
-        kernel.setArg(1, centresBuffer);
+        kernel.setArg(1, centersBuffer);
         kernel.setArg(2, timesBuffer);
-        kernel.setArg(3, numCentres);
-        kernel.setArg(4, now());
+        kernel.setArg(3, numCenters);
+        kernel.setArg(4, System.currentTimeMillis());
         clEnqueueNDRangeKernel(queue, kernel, 1, null, workSize, null, null, null);
         Util.checkCLError(clEnqueueReleaseGLObjects(queue, vertexBufferCL, null, null));
         clFinish(queue);
@@ -131,27 +130,25 @@ public class Ripple {
             float x = ((float)Mouse.getEventX() / Display.getWidth()) * 2 - 1;
             float y = ((float)Mouse.getEventY() / Display.getHeight()) * 2 - 1;
 
-            FloatBuffer centre = BufferUtils.createFloatBuffer(2);
-            centre.put(new float[] {x, y});
-            centre.flip();
-            clEnqueueWriteBuffer(queue, centresBuffer, 0,
-              currentCentre * 2 * FLOAT_SIZE, centre, null, null);
-
-            FloatBuffer time = BufferUtils.createFloatBuffer(1);
-            time.put(now());
+            FloatBuffer center = BufferUtils.createFloatBuffer(2);
+            center.put(new float[] {x, y});
+            center.flip();
+            clEnqueueWriteBuffer(queue, centersBuffer, 0,
+              currentCenter * 2 * FLOAT_SIZE, center, null, null);
+            LongBuffer time = BufferUtils.createLongBuffer(1);
+            time.put(System.currentTimeMillis());
             time.flip();
 
             clEnqueueWriteBuffer(queue, timesBuffer, 0,
-              currentCentre * FLOAT_SIZE, time, null, null);
-
-            currentCentre = (currentCentre + 1) % numCentres;
+              currentCenter * LONG_SIZE, time, null, null);
+            currentCenter = (currentCenter + 1) % numCenters;
           }
         }
       }
 
       clReleaseMemObject(vertexBufferCL);
       clReleaseMemObject(timesBuffer);
-      clReleaseMemObject(centresBuffer);
+      clReleaseMemObject(centersBuffer);
       clReleaseKernel(kernel);
       clReleaseProgram(program);
       clReleaseCommandQueue(queue);
@@ -181,10 +178,6 @@ public class Ripple {
     } finally {
       reader.close();
     }
-  }
-
-  private static float now() {
-    return (System.currentTimeMillis() - start) / 1000.0f;
   }
 
   public static void main(String[] argv) {

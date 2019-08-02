@@ -38,33 +38,31 @@ public class WikipediaContributors extends Configured implements Tool {
       throws IOException, InterruptedException {
 
       Contribution contribution = new Contribution(value.toString());
-      context.write(new IntWritable(contribution.getContributorId()), 
-        new LongWritable(contribution.getTimestamp()));
+      context.write(new IntWritable(contribution.contributorId), 
+        new LongWritable(contribution.timestamp));
     }
   }
 
-  public static class Reduce extends Reducer<IntWritable, LongWritable, IntWritable, Text> {
-
+  public static class Reduce 
+    extends Reducer<IntWritable, LongWritable, IntWritable, Text> {
     static DateTimeFormatter dayFormat = ISODateTimeFormat.yearMonthDay();
     static DateTimeFormatter monthFormat = ISODateTimeFormat.yearMonth();
 
-    public void reduce(IntWritable key, Iterable<LongWritable> values, Context context)
-      throws IOException, InterruptedException {
-
-      HashMap<DateTime, Integer> days = new HashMap<DateTime, Integer>();
-      HashMap<DateTime, Integer> months = new HashMap<DateTime, Integer>();
-
+    public void reduce(IntWritable key, Iterable<LongWritable> values,
+                       Context context) throws IOException, InterruptedException {
+      HashMap<DateTime, Integer> days = new HashMap<DateTime, Integer>(); 
+      HashMap<DateTime, Integer> months = new HashMap<DateTime, Integer>(); 
       for (LongWritable value: values) {
         DateTime timestamp = new DateTime(value.get());
-        DateTime day = timestamp.withTimeAtStartOfDay();
-        DateTime month = day.withDayOfMonth(1);
+        DateTime day = timestamp.withTimeAtStartOfDay(); 
+        DateTime month = day.withDayOfMonth(1); 
         incrementCount(days, day);
         incrementCount(months, month);
       }
-      for (Entry<DateTime, Integer> entry: days.entrySet())
-        context.write(key, new Text(dayFormat.print(entry.getKey()) + "\t" + entry.getValue()));
+      for (Entry<DateTime, Integer> entry: days.entrySet()) 
+        context.write(key, formatEntry(entry, dayFormat));
       for (Entry<DateTime, Integer> entry: months.entrySet())
-        context.write(key, new Text(monthFormat.print(entry.getKey()) + "\t" + entry.getValue()));
+        context.write(key, formatEntry(entry, monthFormat)); 
     }
 
     private void incrementCount(HashMap<DateTime, Integer> counts, DateTime key) {
@@ -73,6 +71,11 @@ public class WikipediaContributors extends Configured implements Tool {
         counts.put(key, 1);
       else
         counts.put(key, currentCount + 1);
+    }
+
+    private Text formatEntry(Entry<DateTime, Integer> entry, 
+                             DateTimeFormatter formatter) {
+      return new Text(formatter.print(entry.getKey()) + "\t" + entry.getValue())
     }
   }
 

@@ -21,6 +21,7 @@ public class WordCount {
     Thread counter = new Thread(new Counter(queue, counts));
     Thread parser = new Thread(new Parser(queue));
     long start = System.currentTimeMillis();
+	
     counter.start();
     parser.start();
     parser.join();

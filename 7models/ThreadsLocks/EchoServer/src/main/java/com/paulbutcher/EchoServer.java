@@ -20,7 +20,6 @@ public class EchoServer {
 
     class ConnectionHandler implements Runnable {
       InputStream in; OutputStream out;
-
       ConnectionHandler(Socket socket) throws IOException {
         in = socket.getInputStream();
         out = socket.getOutputStream();

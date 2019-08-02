@@ -22,8 +22,9 @@
   (let [reader (XmlReader. (io/input-stream (.getBytes body)))]
     (.build (SyndFeedInput.) reader)))
 
-; Simple-minded feed polling function
+; Simple-minded feed-polling function
 ; WARNING: Don't use in production (use conditional get instead)
+
 (defn poll-feed [url]
   (let [ch (chan)]
     (poll poll-interval

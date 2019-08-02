@@ -20,9 +20,7 @@ defmodule Talker do
 end
 
 pid = spawn(&Talker.loop/0)
-
 send(pid, {:greet, "Huey"})
 send(pid, {:praise, "Dewey"})
 send(pid, {:celebrate, "Louie", 16})
-
 sleep(1000)

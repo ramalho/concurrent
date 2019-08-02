@@ -15,13 +15,13 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 class Contribution {
-  static final DateTimeFormatter isoFormat = ISODateTimeFormat.dateTimeNoMillis();
   static final Pattern pattern = Pattern.compile("^([^\\s]*) (\\d*) (\\d*) (.*)$");
+  static final DateTimeFormatter isoFormat = ISODateTimeFormat.dateTimeNoMillis();
 
-  long timestamp;
-  int id;
-  int contributorId;
-  String username;
+  public long timestamp;
+  public int id;
+  public int contributorId;
+  public String username;
 
   public Contribution(String line) {
     Matcher matcher = pattern.matcher(line);
@@ -32,9 +32,4 @@ class Contribution {
       username = matcher.group(4);
     }
   }
-
-  public long getTimestamp() { return timestamp; }
-  public int getId() { return id; }
-  public int getContributorId() { return contributorId; }
-  public String getUsername() { return username; }
 }

@@ -8,18 +8,18 @@
 ;---
 (ns animation.core
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [goog.dom :refer [getElement]]
-            [goog.graphics :refer [Stroke createGraphics]]
-            [goog.events :refer [listen]]
+  (:require [goog.dom :as dom]
+            [goog.graphics :as graphics]
+            [goog.events :as events]
             [cljs.core.async :refer [<! chan put! timeout]]))
 
 (defn get-events [elem event-type]
   (let [ch (chan)]
-    (listen elem event-type
+    (events/listen elem event-type
       #(put! ch %))
     ch))
 
-(def stroke (Stroke. 1 "#ff0000"))
+(def stroke (graphics/Stroke. 1 "#ff0000"))
 
 (defn shrinking-circle [graphics x y]
   (go
@@ -32,11 +32,11 @@
       (.dispose circle)))) 
 
 (defn create-graphics [elem]
-  (doto (createGraphics "100%" "100%")
+  (doto (graphics/createGraphics "100%" "100%")
     (.render elem)))
 
 (defn start []
-  (let [canvas (getElement "canvas")
+  (let [canvas (dom/getElement "canvas")
         graphics (create-graphics canvas)
         clicks (get-events canvas "click")]
     (go (while true

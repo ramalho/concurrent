@@ -15,7 +15,6 @@
 #include <stdio.h>
 
 #define NUM_ELEMENTS 1024
-
 char* read_source(const char* filename) {
   FILE *h = fopen(filename, "r");
   fseek(h, 0, SEEK_END);
@@ -48,15 +47,12 @@ int main() {
   cl_program program = clCreateProgramWithSource(context, 1,
     (const char**)&source, NULL, NULL);
   free(source);
-
   clBuildProgram(program, 0, NULL, NULL, NULL, NULL);
-
   cl_kernel kernel = clCreateKernel(program, "multiply_arrays", NULL);
 
   cl_float a[NUM_ELEMENTS], b[NUM_ELEMENTS];
   random_fill(a, NUM_ELEMENTS);
   random_fill(b, NUM_ELEMENTS);
-
   cl_mem inputA = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
     sizeof(cl_float) * NUM_ELEMENTS, a, NULL);
   cl_mem inputB = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,

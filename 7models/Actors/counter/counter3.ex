@@ -20,7 +20,6 @@ defmodule Counter do
     Process.register(pid, :counter)
     pid
   end
-
   def next do
     ref = make_ref()
     send(:counter, {:next, self(), ref})

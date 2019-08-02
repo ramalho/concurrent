@@ -61,14 +61,14 @@ public class WordCount extends Configured implements Tool {
 
   public int run(String[] args) throws Exception {
     Configuration conf = getConf();
-    conf.set("xmlinput.start", "<text");
-    conf.set("xmlinput.end", "</text>");
+    conf.set("xmlinput.start", "<text"); 
+    conf.set("xmlinput.end", "</text>"); 
 
     Job job = Job.getInstance(conf, "wordcount");
     job.setJarByClass(WordCount.class);
-    job.setInputFormatClass(XmlInputFormat.class);
+    job.setInputFormatClass(XmlInputFormat.class); 
     job.setMapperClass(Map.class);
-    job.setCombinerClass(Reduce.class);
+    job.setCombinerClass(Reduce.class); 
     job.setReducerClass(Reduce.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);

@@ -8,8 +8,8 @@
 ;---
 (ns wizard.core
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [goog.dom :refer [getElement]]
-            [goog.events :refer [listen]]
+  (:require [goog.dom :as dom]
+            [goog.events :as events]
             [cljs.core.async :refer [chan put!]]))
 
 (defn show [elem]
@@ -23,17 +23,17 @@
 
 (defn get-events [elem event-type]
   (let [ch (chan)]
-    (listen elem event-type
+    (events/listen elem event-type
       #(put! ch %))
     ch))
 
 (defn start []
   (go
-    (let [wizard (getElement "wizard")
-          step1 (getElement "step1")
-          step2 (getElement "step2")
-          step3 (getElement "step3")
-          next-button (getElement "next")
+    (let [wizard (dom/getElement "wizard")
+          step1 (dom/getElement "step1")
+          step2 (dom/getElement "step2")
+          step3 (dom/getElement "step3")
+          next-button (dom/getElement "next")
           next-clicks (get-events next-button "click")] 
       (show step1)
       (<! next-clicks) 

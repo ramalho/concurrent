@@ -26,9 +26,8 @@ import org.apache.hadoop.util.ToolRunner;
 public class WordCount extends Configured implements Tool {
 
   public static class Map extends Mapper<Object, Text, Text, IntWritable> {
-
     private final static IntWritable one = new IntWritable(1);
-
+	
     public void map(Object key, Text value, Context context)
       throws IOException, InterruptedException {
 
@@ -40,10 +39,8 @@ public class WordCount extends Configured implements Tool {
   }
 
   public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
-
     public void reduce(Text key, Iterable<IntWritable> values, Context context)
       throws IOException, InterruptedException {
-
       int sum = 0;
       for (IntWritable val: values)
         sum += val.get();
@@ -61,7 +58,6 @@ public class WordCount extends Configured implements Tool {
     job.setOutputValueClass(IntWritable.class); 
     FileInputFormat.addInputPath(job, new Path(args[0])); 
     FileOutputFormat.setOutputPath(job, new Path(args[1])); 
-
     boolean success = job.waitForCompletion(true); 
     return success ? 0 : 1;
   }

@@ -10,25 +10,60 @@
   (:require [clojure.data.xml :as xml]
             [clojure.java.io :as io]))
 
-(defn- parent->children [parent tag]
-  (filter #(= tag (:tag %)) (:content parent)))
+(defn start-elem? [event name]
+  (and (= :start-element (:type event)) (= name (:name event))))
 
-(defn- parent->child [parent tag]
-  (first (parent->children parent tag)))
+(defn end-elem? [event name]
+  (and (= :end-element (:type event)) (= name (:name event))))
 
-(defn- content [tag]
-  (first (:content tag)))
+(defn complete? [contribution]
+  (and (contains? contribution :username)
+       (contains? contribution :contributor-id)))
 
-(defn- get-contribution [revision]
-  (let [timestamp (content (parent->child revision :timestamp))
-        id (content (parent->child revision :id))
-        contributor (parent->child revision :contributor)
-        username (content (parent->child contributor :username))
-        contributor-id (content (parent->child contributor :id))]
-    [timestamp id contributor-id username]))
+(defn get-contributions 
+  ([in]
+    (get-contributions [:top {}] (xml/source-seq in)))
+  ([[state contribution] events]
+    (lazy-seq
+      (let [event (first events)]
+        (cond
+          (and (= state :top) (start-elem? event :revision))
+            (get-contributions [:got-revision {}] (rest events))
 
-(defn get-contributions [filename]
-  (let [in (io/reader filename)
-        pages (parent->children (xml/parse in) :page)
-        revisions (mapcat #(parent->children % :revision) pages)]
-    (map get-contribution revisions)))
+          (and (= state :got-revision) (start-elem? event :id))
+            (get-contributions [:got-revision
+                                (assoc contribution :id (:str (second events)))]
+                               (nthrest events 2))
+
+          (and (= state :got-revision) (start-elem? event :timestamp))
+            (get-contributions [:got-revision
+                                (assoc contribution :timestamp (:str (second events)))]
+                               (nthrest events 2))
+          
+          (and (= state :got-revision) (start-elem? event :contributor))
+            (get-contributions [:got-contributor contribution] (rest events))
+            
+          (and (= state :got-contributor) (start-elem? event :id))
+            (get-contributions [:got-contributor 
+                                (assoc contribution :contributor-id (:str (second events)))]
+                               (nthrest events 2))
+            
+          (and (= state :got-contributor) (start-elem? event :username))
+            (get-contributions [:got-contributor
+                                (assoc contribution :username (:str (second events)))]
+                               (nthrest events 2))
+            
+          (and (= state :got-contributor) (end-elem? event :contributor))
+            (if (complete? contribution)
+              (cons contribution (get-contributions [:got-revision (dissoc contribution :contributor-id :username)]
+                                                    (rest events)))
+              (get-contributions [:got-revision (dissoc contribution :contributor-id :username)]
+                                 (rest events)))
+            
+          (and (= state :got-revision) (end-elem? event :revision))
+            (get-contributions [:top {}] (rest events))
+            
+          (nil? event) '()
+            
+          :else (get-contributions [state contribution] (rest events)))))))
+

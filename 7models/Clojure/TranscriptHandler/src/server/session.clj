@@ -11,7 +11,6 @@
             [flatland.useful.map :refer [remove-vals]]))
 
 (def last-session-id (atom 0))
-
 (defn next-session-id []
   (swap! last-session-id inc))
 
@@ -33,12 +32,10 @@
 
 (defn session-expiry-time []
   (- (now) (* 10 60 1000)))
-
 (defn expired? [session]
   (< @(:last-referenced session) (session-expiry-time)))
 
 (defn sweep-sessions []
   (swap! sessions #(remove-vals % expired?)))
-
 (def session-sweeper
   (schedule {:min (range 0 60 5)} sweep-sessions))

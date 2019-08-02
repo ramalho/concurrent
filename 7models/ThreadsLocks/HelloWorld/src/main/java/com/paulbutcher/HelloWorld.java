@@ -16,7 +16,9 @@ public class HelloWorld {
           System.out.println("Hello from new thread");
         }
       };
+	  
     myThread.start();
+    Thread.yield();
     System.out.println("Hello from main thread");
     myThread.join();
   }

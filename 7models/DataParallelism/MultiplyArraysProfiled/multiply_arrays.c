@@ -76,11 +76,10 @@ int main() {
   size_t work_units = NUM_ELEMENTS;
   clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &work_units, 
     NULL, 0, NULL, &timing_event);
-
+	
   cl_float results[NUM_ELEMENTS];
   clEnqueueReadBuffer(queue, output, CL_TRUE, 0, sizeof(cl_float) * NUM_ELEMENTS,
     results, 0, NULL, NULL);
-
   uint64_t endGPU = mach_absolute_time();
   printf("Total (GPU): %lu ns\n\n", (unsigned long)(endGPU - startGPU));
 
@@ -91,7 +90,6 @@ int main() {
   clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_END, 
     sizeof(cl_ulong), &endtime, NULL);
   printf("Elapsed (GPU): %lu ns\n\n", (unsigned long)(endtime - starttime));
-
   clReleaseEvent(timing_event);
   clReleaseMemObject(inputA);
   clReleaseMemObject(inputB);

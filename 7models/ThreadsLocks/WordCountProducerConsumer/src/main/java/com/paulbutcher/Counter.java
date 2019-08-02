@@ -12,10 +12,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.Map;
 
 class Counter implements Runnable {
-
   private BlockingQueue<Page> queue;
   private Map<String, Integer> counts;
-
+  
   public Counter(BlockingQueue<Page> queue,
                  Map<String, Integer> counts) {
     this.queue = queue;
@@ -28,6 +27,7 @@ class Counter implements Runnable {
         Page page = queue.take();
         if (page.isPoisonPill())
           break;
+
         Iterable<String> words = new Words(page.getText());
         for (String word: words)
           countWord(word);

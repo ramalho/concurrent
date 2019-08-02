@@ -21,13 +21,8 @@ public class Interruptible {
       public void run() {
         try {
           l1.lockInterruptibly();
-          try {
-            Thread.sleep(1000);
-            l2.lockInterruptibly();
-            l2.unlock();
-          } finally {
-            l1.unlock();
-          }
+          Thread.sleep(1000);
+          l2.lockInterruptibly();
         } catch (InterruptedException e) { System.out.println("t1 interrupted"); }
       }
     };
@@ -36,13 +31,8 @@ public class Interruptible {
       public void run() {
         try {
           l2.lockInterruptibly();
-          try {
-            Thread.sleep(1000);
-            l1.lockInterruptibly();
-            l1.unlock();
-          } finally {
-            l2.unlock();
-          }
+          Thread.sleep(1000);
+          l1.lockInterruptibly();
         } catch (InterruptedException e) { System.out.println("t2 interrupted"); }
       }
     };

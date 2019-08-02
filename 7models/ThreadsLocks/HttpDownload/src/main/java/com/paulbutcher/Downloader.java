@@ -22,15 +22,12 @@ class Downloader extends Thread {
     out = new FileOutputStream(outputFilename);
     listeners = new ArrayList<ProgressListener>();
   }
-
   public synchronized void addListener(ProgressListener listener) {
     listeners.add(listener);
   }
-
   public synchronized void removeListener(ProgressListener listener) {
     listeners.remove(listener);
   }
-
   private synchronized void updateProgress(int n) {
     for (ProgressListener listener: listeners)
       listener.onProgress(n);

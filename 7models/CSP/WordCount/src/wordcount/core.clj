@@ -25,8 +25,8 @@
 (defn -main [feeds-file]
   (with-open [rdr (io/reader feeds-file)] 
     (let [feed-urls (line-seq rdr) 
-          article-urls (map new-links feed-urls) 
-          article-counts (map get-counts article-urls) 
+          article-urls (doall (map new-links feed-urls)) 
+          article-counts (doall (map get-counts article-urls)) 
           counts (async/merge article-counts)] 
       (while true 
         (println (<!! counts))))))

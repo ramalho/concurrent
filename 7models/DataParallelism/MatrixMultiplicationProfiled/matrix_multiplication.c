@@ -121,7 +121,7 @@ int main() {
   cl_ulong endtime;
   clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_END,
     sizeof(cl_ulong), &endtime, NULL);
-  printf("Total (GPU): %lu ns\n\n", (unsigned long)(endtime - starttime));
+  printf("Elapsed (GPU): %lu ns\n\n", (unsigned long)(endtime - starttime));
 
   CHECK_STATUS(clReleaseEvent(timing_event));
   CHECK_STATUS(clReleaseMemObject(inputA));
