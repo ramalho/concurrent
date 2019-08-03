@@ -16,4 +16,4 @@ Simple and _just works™!_
 
 The bare-bones, old-fashioned way to compile and run Java programs works fine with the simple examples in chapter 1 of _Seven Concurrency Models in Seven Weeks_.
 
-I tried to use Maven as the author recommended in `ThreadsLocks/README`, but I found it too complicated, `mvn` downloaded lots of stuff for no obvious reason, and the output of `mvn exec:java` has a lot of noise that obscures the simple output of the program. I bet there are command-line options to silece that, but I decided to go back to basics and use just `javac` and `java`.
+I tried to use Maven as the author recommended in `ThreadsLocks/README`, but I found it too complicated, `mvn` downloaded lots of stuff for no obvious reason, and the output of `mvn exec:java` has a lot of noise that obscures the simple output of the program. I bet there are command-line options to silence all that noise, but I decided to go back to basics and use just `javac` and `java`.
