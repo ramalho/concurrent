@@ -18,7 +18,8 @@ public class HelloWorld {
       };
 	  
     myThread.start();
-    Thread.yield();
+    // Thread.yield();
+    Thread.sleep(0);
     System.out.println("Hello from main thread");
     myThread.join();
   }
