@@ -2,10 +2,9 @@ import random
 import time
 import threading
 
-
 MAX_DELAY = 10  # milliseconds
 
-EAT_GOAL = 100
+EAT_GOAL = 10000
 
 
 class Philosopher:
@@ -20,12 +19,14 @@ class Philosopher:
         return f'Philosopher #{self.number}'
 
     def delay(self):
-        time.sleep(self.random.random() * MAX_DELAY / 1000)
+        # time.sleep(self.random.random() * MAX_DELAY / 1000)  # Hi-res delay
+        time.sleep(self.random.randrange(MAX_DELAY) / 1000)  # Lo-res delay
 
     def run(self):
         while self.eat_count < EAT_GOAL:
             self.delay()  # Think for a while
             with self.first:  # Take first chopstick
+                time.sleep(0)  # Hesitate
                 with self.second:  # Take second chopstick
                     self.delay()  # Eat for a while
             self.eat_count += 1

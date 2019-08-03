@@ -19,15 +19,16 @@ class Philosopher:
         return f'Philosopher #{self.number}'
 
     def delay(self):
-        #time.sleep(self.random.random() * MAX_DELAY / 1000)  # Hi-res delay
+        # time.sleep(self.random.random() * MAX_DELAY / 1000)  # Hi-res delay
         time.sleep(self.random.randrange(MAX_DELAY) / 1000)  # Lo-res delay
 
     def run(self):
         while self.eat_count < EAT_GOAL:
-            self.delay()          # Think for a while
-            with self.left:         # Take first chopstick
-                with self.right:      # Take second chopstick
-                    self.delay()        # Eat for a while
+            self.delay()  # Think for a while
+            with self.left:  # Take first chopstick
+                time.sleep(0)  # Hesitate
+                with self.right:  # Take second chopstick
+                    self.delay()  # Eat for a while
             self.eat_count += 1
             if self.eat_count % 10 == 0:
                 print(f'{self} has eaten {self.eat_count} times.')
