@@ -29,7 +29,7 @@ class Philosopher:
                 time.sleep(0)  # Hesitate
                 with self.second:  # Take second chopstick
                     self.delay()  # Eat for a while
-            eat_count += 1
+                    eat_count += 1
             if eat_count % 10 == 0:
                 print(f'{self} has eaten {eat_count} times.')
         print(f'{self} is full.')

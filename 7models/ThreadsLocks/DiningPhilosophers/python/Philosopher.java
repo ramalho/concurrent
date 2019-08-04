@@ -9,11 +9,11 @@
 import java.util.Random;
 
 class Philosopher extends Thread {
+  final int eatGoal = 50;
   private int id;
   private Chopstick left, right;
   private Random random;
   private int eatCount;
-  final int eatGoal = 50;
 
   public Philosopher(int id, Chopstick left, Chopstick right) {
     this.id = id;
@@ -32,9 +32,9 @@ class Philosopher extends Thread {
         synchronized(left) {                    // Grab left chopstick 
           synchronized(right) {                 // Grab right chopstick 
             Thread.sleep(random.nextInt(10)); // Eat for a while
+            ++eatCount;
           }
         }
-        ++eatCount;
         if (eatCount % 10 == 0)
           System.out.println(this + " has eaten " + eatCount + " times.");
       }
