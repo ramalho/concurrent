@@ -27,13 +27,15 @@ public class WordCount {
     }
     catch (java.util.NoSuchElementException e) {}
     long end = System.currentTimeMillis();
-    // for (Map.Entry<String, Integer> e: counts.entrySet())
-    //  System.out.println(e);
     System.out.println("# Pages: " + counter);
     System.out.println("# Elapsed time: " + (end - start) + "ms");
+    for (Map.Entry<String, Integer> e: counts.entrySet())
+      if (e.getValue() > 1000)
+        System.out.println(e);
   }
 
   private static void countWord(String word) {
+    word = word.toUpperCase();
     Integer currentCount = counts.get(word);
     if (currentCount == null)
       counts.put(word, 1);
