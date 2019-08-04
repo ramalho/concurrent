@@ -23,3 +23,4 @@ __pycache__
 .env
 .venv
 .idea
+.mypy_cache
